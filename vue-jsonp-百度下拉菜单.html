@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background-size: cover;
+        background-position: 50% 50%;
+        min-width: 420px;
+    }
+
+    .search-wrapper {
+        font-size: 0;
+    }
+
+    .searchInput {
+        width: 400px;
+        height: 35px;
+        text-indent: 10px;
+        font-size: 18px;
+    }
+
+    button {
+        height: 39px;
+        padding: 0 10px;
+        cursor: pointer;
+    }
+
+    p {
+        background-color: #fff;
+        line-height: 30px;
+        text-indent: 10px;
+    }
+
+    ul {
+        list-style: none;
+        background: #fff;
+    }
+
+    ul>li {
+        line-height: 30px;
+        text-indent: 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    ul>li.active {
+        background-color: #ddd;
+    }
+
+    .bg {
+        background-color: #ddd;
+    }
+</style>
+
+<body>
+    <div id="box">
+        <div class="search-wrapper">
+            <input type="text" class="searchInput" v-model="msg" @keyup="get($event)" @keydown.down="changedown()" @keydown.up.prevent="changeup()">
+            <button>百度一下</button>
+            <!--@keydown.up.prevent="changeup()" prevent阻止默认行为，此处阻止按上键光标前移-->
+        </div>
+
+        <ul>
+            <!--(value,index) in myData  value 与 index 的顺序固定-->
+            <li v-for='(value,index) in myData' :class="{bg:index == now}" @click="changeone(index)">
+                {{value}}
+            </li>
+        </ul>
+        <p v-show="this.myData.length==0">暂无数据。。。</p>
+    </div>
+    <script src="../vue.js"></script>
+    <script src="../vue-resource.js"></script>
+    <script>
+        new Vue({
+            el: '#box',
+            data: {
+                myData: [],
+                msg: '',
+                now: -1,
+            },
+            methods: {
+                get: function (ev) {
+                    if (ev.keyCode == 38 || ev.keyCode == 40) {
+                        return
+                    };
+                    if (ev.keyCode == 13) {
+                        window.open("https://www.baidu.com/s?word=" + this.msg);
+                        this.msg = "";
+                    };
+                    // wd在url里拼接
+                    this.$http.jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=' + this.msg, {
+                        jsonp: 'cb'
+                    }).then((response) => {
+                        this.myData = response.body.s;
+                        //alert(this.myData);
+                    }, (response) => {
+
+                    });
+                },
+                // 下键              
+                changedown: function () {
+                    this.now++;
+                    if (this.now == this.myData.length) {
+                        this.now = -1;
+                    }
+                    this.msg = this.myData[this.now];
+                },
+                // 上键
+                changeup: function () {
+                    this.now--;
+                    if (this.now == -2) {
+                        this.now = this.myData.length - 1;
+                    }
+                    this.msg = this.myData[this.now];
+                },
+                changeone: function (index) {
+                    this.msg = this.myData[index];
+                    this.now = index;
+                    window.open("https://www.baidu.com/s?word=" + this.msg);
+                    this.msg = "";
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
