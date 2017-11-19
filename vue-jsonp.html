@@ -37,12 +37,6 @@
         font-size: 18px;
     }
 
-    button {
-        height: 39px;
-        padding: 0 10px;
-        cursor: pointer;
-    }
-
     p {
         background-color: #fff;
         line-height: 30px;
@@ -74,7 +68,6 @@
     <div id="box">
         <div class="search-wrapper">
             <input type="text" class="searchInput" v-model="msg" @keyup="get($event)" @keydown.down="changedown()" @keydown.up.prevent="changeup()">
-            <button>百度一下</button>
             <!--@keydown.up.prevent="changeup()" prevent阻止默认行为，此处阻止按上键光标前移-->
         </div>
 
